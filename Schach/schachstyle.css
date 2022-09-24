@@ -1,0 +1,40 @@
+body {
+  background-color: rgba(16, 105, 105, 0.678);
+  cursor: default;
+}
+.bgw {
+  background-color: white;
+  color: black;
+}
+.bgs {
+  background-color: rgb(15, 135, 187);
+}
+#boardtbl {
+  border: 3px solid black;
+  table-layout: fixed;
+  font-size: 40px;
+  text-align: center;
+}
+#board {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+td {
+  overflow: hidden;
+  height: 60px;
+  width: 60px;
+  table-layout: fixed;
+}
+button.figlink {
+  background: none;
+  border: none;
+  font-size: 40px;
+}
+.newbgw {
+  background-color: rgba(255, 255, 255, 0.775);
+}
+.newbgs {
+  background-color: rgba(15, 135, 187, 0.315);
+}
