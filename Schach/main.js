@@ -119,10 +119,13 @@ for (i = 17; i <= 48; i++) {
 Kreieren einer HTML Tabelle mit Schachmuster
 */
 var patternAlt = false;
+//patternALt soegt für das schachartige Muster, damit nicht das Schachbrett farblich nach spaltemn sortiert ist
 var tblcreate = "<table id=\"boardtbl\"><tr>";
 for (i = 1; i <= 64; i++) {
     if (i % 8 === 1) {
         tblcreate += "</tr><tr>";
+        //falls Divion durch 8 Rest 1 ist, mache eine neue Row
+        //swappe Wert von patternAlt:
         if (patternAlt) {
             patternAlt = false;
         }
@@ -130,6 +133,9 @@ for (i = 1; i <= 64; i++) {
             patternAlt = true;
         }
     }
+    //gebe den richtigen BAckground basierend auf dem Wert von patternalt und ob eine Zahl gerade ist, kreiert das Schachbrettartige Muster
+    //füllt die Tabelle mit unsichtbaren Buttons mit einer einzigartigen TDID 1 - 64, Text der Buttons ist der Unicode character der an der Stelle i von content liegt
+    //content wird einem Feld nur gegeben wenn der inhalt des feldes != null ist
     if (i % 2 === 0 && !patternAlt) {
         //bg black
         if (feld[i] != null) {
@@ -182,6 +188,8 @@ p mvs einzeln deklariert, da besonders0
 b mvs initialer erster doppelter move0
 cmt = can multiple, ob mvs nur ein feld oder mehrere felder überspan0nen können
 */
+//Eine Moveproperty enthält einen Main Wert, welches die Verschiebung auf dem Array darstellt, sowie einen Borderow Wert,
+//welcher aussagt auf welchem Feld der Move Boundaries hitted
 var mvup = { main: -8, borderrow: [1, 2, 3, 4, 5, 6, 7, 8] };
 var mvdw = { main: 8, borderrow: [57, 58, 59, 60, 61, 62, 63, 64] };
 var mvlf = { main: -1, borderrow: [1, 9, 17, 25, 33, 41, 49, 57] };
@@ -427,21 +435,26 @@ var shadowkonig = {
     ]
 };
 //mvs ende
+//wturn gebt auskunft darüber ob weis (true) am zug ist oder schwarz (false)
 var wturn = false;
+// in allpostruns werden alle möglichen Züge einer Figur gespeichert
 var allposturns = [];
 var t;
 var schachcheck;
 newturn();
 function newturn() {
+    allposturns = [];
     if (wturn) {
         wturn = false;
     }
     else {
         wturn = true;
     }
+    //noch nicht in Gebrauch:
     if (schachcheck == true) {
         alert("Schach" + wturn);
     }
+    //holen des angecklickten Feldes
     if (document.addEventListener) {
         document.addEventListener("click", getMoveset, false);
     }
@@ -450,6 +463,7 @@ function newturn() {
     }
 }
 function tblrerun() {
+    //Löschen und neuerstellen der TAbelle, um zu aktualisieren
     var rower = 8;
     document.getElementById("board").innerHTML = "";
     patternAlt = false;
@@ -504,6 +518,7 @@ function tblrerun() {
     document.getElementById("board").innerHTML = tblcreate;
     newturn();
 }
+//extrahieren der ID des angecklikten Feldes: übergibt clickid wenn eine figur angeclickt wurde, übergíbt TDID wenn ein leeres feld geclickt wurde
 function getMoveset(event) {
     event = event || window.event;
     event.target = event.target || event.srcElement;
@@ -517,16 +532,21 @@ var colcheck = false;
 var temparradd;
 var moremvs;
 function calcmvs(clickid) {
+    //splitten des Strings, welcher die ELment ID enthält
     var checksplit = clickid.split("");
     var colidgive = "";
     var getcolcheck;
+    //schaue ob die ID die ID eines nicht leeren Feldes ist
     if (checksplit[0] != "t") {
         for (x = 0; x < checksplit.length; x++) {
             if (x == 7 || x == 8) {
+                //extrahiere nur die Zahlen der id
                 colidgive = colidgive + checksplit[x];
             }
         }
+        //getcolcheck: get colour check, eine Methode die aus einer Zahl 1 - 64 die FArbe der Figur returned
         getcolcheck = getcolid(colidgive);
+        //überprüfe ob die geclickte Figur von der eigenen Farbe ist
         if (wturn) {
             if (getcolcheck == "w") {
                 colcheck = false;
@@ -544,17 +564,25 @@ function calcmvs(clickid) {
             }
         }
     }
+    //falls das angecklickte Feld nicht leer ist und angecklickte Figur die gleiche Farbe hat
     if (checksplit[0] != "t" && colcheck == false) {
+        //splitte die angecklickte id, extrahiere den reinen Zahlenwert
         var idsplit = clickid.split(" ");
         var purepieid = Number(idsplit[1]);
+        // 2. Elemnt des Arrays enthlt absolute Position der Figur (1-64)
         var pietypearr = feld[purepieid].split("");
+        //hole dir aus der abgespeicherten ID die 2. Stelle, welche Information über die Art des Pieces hat
         var pietype = pietypearr[1];
+        //gleicher code für alle Pieces:
         if (pietype == "t") {
             moremvs = turmmvs.cmt;
             allposturns = [[], [], [], []];
+            //setzte allposturns gleich der erwartetenden länger der benötigten Subarrays
             for (k = 0; k < allposturns.length; k++) {
                 allposturns[k].push(purepieid);
+                //der Index 0 jedes Subarrays enthält die absolute position der Figur
                 for (o = 1; o <= 7; o++) {
+                    //füge jedem Subarray 7x die absoluten Poitionsbewegungen hinzu
                     temparradd = turmmvs.mva[k] * o;
                     allposturns[k].push(temparradd);
                 }
@@ -643,9 +671,11 @@ function calcmvs(clickid) {
         var dblblocked = false;
         for (k = 0; k < allposturns.length; k++) {
             for (o = 1; o < 8; o++) {
+                //addiere die ermittelten absoluten möglichen Bewegungen zur aktuellen Position, um so die Felder relativ zur aktuellen Position zu ermnitteln
                 allposturns[k][o] = allposturns[k][o] + purepieid;
             }
         }
+        //Check ob das angecklickte Piece auch von der eigenen Frabe ist
         colourid = getcolid(allposturns[0][0]);
         if (wturn && colourid == "s") {
             noloop = true;
@@ -654,21 +684,28 @@ function calcmvs(clickid) {
             noloop = true;
         }
         for (k = 0; k < allposturns.length; k++) {
-            isbreak = false;
-            isgonnabreak = false;
+            isbreak = false; //Variable um einen Abbruch im jetzigen Durchlauf durchzuführen
+            isgonnabreak = false; //Variable um einen Abbruch im nächsten Durchlauf durchzuführen
             if (noloop) {
+                //falls die Farbe nicht passt wird der Durchlauf annuliert
                 isbreak = true;
             }
             if (pietype.cmt) {
+                // checke ob die Figur sich auf mehrere Felder bewegen darf
                 for (o = 0; o < 8; o++) {
                     for (g = 0; g < pietype.borderelements[k].length; g++) {
                         if (allposturns[k][o] == pietype.borderelements[k][g]) {
+                            //sobald ein Borderelement gehitted wird breche ab beim nächsten Durchlauf, verhindert Overflow
                             isgonnabreak = true;
                         }
                     }
                     colourid = getcolid(allposturns[k][o]);
+                    //checke ob ein Feld ob einmögliches Feld eine Figur enthält und checke welche Farbe diese Figur hat
                     if (colourid == "w" && o != 0) {
+                        //ignorie den Index 0, da dieser die eigene Figur enthält
                         if (wturn) {
+                            //sollte eine Figur die eigene Farbe sein, wird ein Zug auf diese Figur verhindert, sollte die Figur eine andere Farbe haben
+                            //erlaube einen Zug auf diese Figur und brich im nächsten Durchlauf ab
                             isbreak = true;
                         }
                         else {
@@ -684,26 +721,35 @@ function calcmvs(clickid) {
                         }
                     }
                     if (isbreak || allposturns[k][o] < 1 || allposturns[k][o] > 64) {
+                        //Abbruch
+                        //sollte ein möglicher Wert out of bounds oder sollte einer der Checks angeschlagen haben
+                        //setzte alle weiteren Züge auf null ("löschung")
                         isbreak = true;
                         allposturns[k][o] = null;
                     }
                     if (isgonnabreak) {
+                        //Abbruch im nächsten Durchlauf setzt hinter der "Löschung" isbreak auf true, dadurch hitted die obrige Bedingugn erst beim nächtsen Durchlauf
                         isbreak = true;
                     }
                 }
             }
             else {
+                //sollte die Figur sich nur ein Feld pro Zug bewegen sollen: König, Springer, Bauer
+                //"lösche" alle erechneten Moves der Indixes  2- 8, ertser Index enthält VErrechnung +main*1, daher +main
                 for (o = 2; o < 8; o++) {
                     allposturns[k][o] = null;
                 }
+                //sollte der Move out of bounds sein lösche den Move
                 if (isbreak || allposturns[k][1] < 1 || allposturns[k][1] > 65) {
                     allposturns[k][1] = null;
                 }
                 for (g = 0; g < pietype.borderelements[k].length; g++) {
+                    //sollte die Figur auf einem Borderelement stehen, lösche den Move
                     if (allposturns[k][0] == pietype.borderelements[k][g]) {
                         allposturns[k][1] = null;
                     }
                 }
+                //Prüfung ob angecklickte Figur eine Figur der sleben Farbe hitted
                 colourid = getcolid(allposturns[k][1]);
                 if (wturn) {
                     if (colourid == "w") {
@@ -717,24 +763,32 @@ function calcmvs(clickid) {
                 }
                 var pieonfeld = void 0;
                 //bauer moves
+                //Überprüfung der Moves der Bauern
                 if (pietype == wbauermvs) {
                     pieonfeld = feld[allposturns[k][1]];
                     if (k == 0) {
+                        //k = 0 enthält den Standardmove eines Bauerns, ein Feld vorwärts
+                        //checke und annuliere den Move, falls auf dem Feld vor dem Bauern ein Piece steht
                         if (pieonfeld != null) {
                             allposturns[k][1] = null;
                             dblblocked = true;
+                            //dblblocked ist ein boolean, der den initialen Doppelzug vorwärts des BAuern blockiert, sollte eine Figur direkt vor dem Bauer steht
+                            // Dies ist notwendig, da der doppelte Step am Anfang eine eigene Moveproperty ist
                         }
                     }
                     else if (k == 1 || k == 2) {
+                        // K = 1 & 2 enthält die seitwärts Schlagmoves, diese werden nur ausgeführt, wenn auf dem Feld diagonal vor dem Bauern eine Figur steht
                         if (pieonfeld == null) {
                             allposturns[k][1] = null;
                         }
                     }
                     else if (k == 3) {
+                        //k = 3 enthält den double step, diese wird annuliert wenn das Feld vor dem Bauern, oder das Feld auf das der Bauer moven möchte blockiert ist
                         if (pieonfeld != null || dblblocked) {
                             allposturns[k][1] = null;
                         }
                     }
+                    //gleiches wie oben, nur für schwarze Bauern
                 }
                 else if (pietype == sbauermvs) {
                     pieonfeld = feld[allposturns[k][1]];
@@ -760,6 +814,8 @@ function calcmvs(clickid) {
         var z = void 0;
         var y = void 0;
         var kingpos = void 0;
+        //Bisher nicht in Benutzung, erster Versuch eines Schachchecks:
+        //schaue wo entweder der weiße/schwarze König steht, merke dir das Feld 1 - 64
         if (wturn) {
             for (y = 1; y <= 64; y++) {
                 if (feld[y] == "wkn") {
@@ -783,6 +839,8 @@ function calcmvs(clickid) {
         for (u = 0; u < shkingpos.length; u++) {
             for (y = 1; y < 8; y++) {
                 if (u < 8 || y == 1) {
+                    //moveset errechnung für den Schattenkönig, eine allmächtige Figur, die über den König gelegt wird, um Moves aus allen Richtungen zu errechnen, um so zu cheken,
+                    //ob der König im Schach steht
                     shkingpos[u].push(shadowkonig.mva[u] * y);
                 }
                 else if (u >= 8 && y > 1) {
@@ -792,6 +850,7 @@ function calcmvs(clickid) {
         }
         console.log(shkingpos);
         for (z = 1; z <= 64; z++) {
+            //clearen der unten markierten background changes für alle background elemenente, entferne den new background, addiere den alten background(css klassen)
             rmmarker = document.getElementById("tdid".concat(z));
             if (rmmarker.className == "newbgw") {
                 rmmarker.classList.add("bgw");
@@ -806,6 +865,7 @@ function calcmvs(clickid) {
         for (k = 0; k < allposturns.length; k++) {
             for (o = 1; o < allposturns[k].length; o++) {
                 getposclass = allposturns[k][o];
+                //setzte getposclass = allen elmenten von allpostruns, ändere den Background, falls ein Move mögolich ist
                 if (getposclass != null) {
                     var classmarker = document.getElementById("tdid".concat(getposclass));
                     if (classmarker.className == "bgw") {

@@ -442,6 +442,7 @@ let t: number;
 let schachcheck: boolean;
 newturn();
 function newturn() {
+  allposturns = [];
   if (wturn) {
     wturn = false;
   } else {
