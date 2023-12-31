@@ -1,5 +1,15 @@
 <script>
-    const apiURL = "https://rest.konzertmeister.app/api/v3/org/OALS_22107c07-6580-4a51-a696-3bb7bb1bfb16/upcomingappointments?types=2&limit=5&display=light&hash=8cf859311e749fdb48125ab90f3542c28df279b9db022f520f5c61f9f90dfb89";
-    fetch(apiURL).then(res => res.json()).then(data => console.log(data));
+const apiUrlICAL = "https://rest.konzertmeister.app/api/v1/ical/0bc3ead5-6de3-49e9-bd9c-ac85c2571e43?orgId=135839&history=false&excludeMeetingPoints=false&hideNegative=false";
+fetch(apiUrlICAL)
+    .then((response) => {
+        if (!response.ok) {
+            throw new Error(`Fehler beim Abrufen der iCal-Datei. Statuscode: ${response.status}`);
+        }
+        return response.text();
+    })
+    .then((icalData) => {
+        // Hier können Sie mit den Daten in der iCal-Datei arbeiten
+        console.log(icalData);
+    });
 </script>
 <h1>Hello</h1>
