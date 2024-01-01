@@ -5,11 +5,11 @@ fetch(apiUrlICAL)
         if (!response.ok) {
             throw new Error(`Fehler beim Abrufen der iCal-Datei. Statuscode: ${response.status}`);
         }
+        console.log(response)
         return response.text();
     })
     .then((icalData) => {
-        // Hier können Sie mit den Daten in der iCal-Datei arbeiten
         console.log(icalData);
     });
 </script>
-<h1>Whatever</h1>
+<h1>Düddü</h1>
