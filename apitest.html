@@ -3,6 +3,6 @@ const apiUrl="https://rest.konzertmeister.app/api/v3/org/OALS_22107c07-6580-4a51
 fetch(apiUrl).then(function (response){
     return response.text();
 }).then(function (html){
-    console.log(html);});
+    document.body.innerHTML = html;});
 </script>
 <h1>Hello Lolo</h1>
